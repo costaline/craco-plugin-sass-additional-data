@@ -1,47 +1,31 @@
-import resolve from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
-import nodePolyfills from 'rollup-plugin-polyfill-node'
+import clear from 'rollup-plugin-clear'
+
 import pkg from './package.json'
 
-export default [
-	{
-		input: 'src/index.js',
-		output: {
-			name: 'index',
-			file: pkg.browser,
-			format: 'umd',
+export default {
+	input: 'src/index.js',
+	external: ['path'],
+	output: [
+		{
+			file: pkg.main,
+			format: 'cjs',
+			exports: 'auto',
 		},
-		plugins: [
-			nodePolyfills(),
-			resolve(),
-			commonjs(),
-			babel({
-				exclude: ['node_modules/**'],
-				babelHelpers: 'bundled',
-			}),
-		],
-	},
-	{
-		input: 'src/index.js',
-		output: [
-			{
-				file: pkg.main,
-				format: 'cjs',
-				exports: 'auto',
-			},
-			{
-				file: pkg.module,
-				format: 'es',
-				exports: 'auto',
-			},
-		],
-		plugins: [
-			nodePolyfills(),
-			babel({
-				exclude: ['node_modules/**'],
-				babelHelpers: 'bundled',
-			}),
-		],
-	},
-]
+		{
+			file: pkg.module,
+			format: 'es',
+			exports: 'auto',
+		},
+	],
+	plugins: [
+		clear({
+			targets: ['lib'],
+		}),
+		babel({
+			exclude: ['node_modules/**'],
+			babelHelpers: 'bundled',
+		}),
+	],
+}
+
